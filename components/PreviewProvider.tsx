@@ -1,10 +1,9 @@
-// components/PreviewProvider.tsx
-export default function PreviewProvider({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  return <>{children}</>
-}
+'use client'
+import type { ReactNode } from 'react'
 
+type Props = { children: ReactNode }
+
+export default function PreviewProvider({ children }: Props) {
+  // keep it dead-simple to satisfy the compiler
+  return <div>{children}</div>
 }

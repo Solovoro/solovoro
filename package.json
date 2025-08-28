@@ -3,7 +3,6 @@
   "private": true,
   "scripts": {
     "build": "next build",
-
     "dev": "next --turbopack",
     "format": "npx prettier --write . --ignore-path .gitignore --cache",
     "lint": "next lint . --ignore-path .gitignore",
@@ -14,7 +13,7 @@
   "prettier": {
     "semi": false,
     "singleQuote": true
-  }
+  },
   "dependencies": {
     "@sanity/client": "7.9.0",
     "@sanity/icons": "3.7.4",

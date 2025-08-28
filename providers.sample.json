@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "name": "Provider One",
+    "city": "Montreal",
+    "service": "moving",
+    "website": "https://providerone.example.com"
+  },
+  {
+    "id": 2,
+    "name": "Provider Two",
+    "city": "Montreal",
+    "service": "moving",
+    "website": "https://providertwo.example.com"
+  }
+]

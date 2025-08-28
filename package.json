@@ -18,10 +18,8 @@
     "@sanity/client": "7.9.0",
     "@sanity/icons": "3.7.4",
     "@sanity/image-url": "1.1.0",
-      "@sanity/preview-url-secret": "2.1.14",
-    "@sanity/vision": "4.5.0",
-    "@sanity/visual-editing": "3.0.3",
-    "@sanity/webhook": "4.0.4",
+     "@sanity/webhook": "4.0.4",
+
     "@vercel/og": "0.8.5",
     "classnames": "2.5.1",
     "date-fns": "4.1.0",
@@ -53,6 +51,6 @@
     "typescript": "5.9.2"
   },
   "engines": {
-    "node": ">=20.19"
+    "node": ">=20.10 <21"
   }
 }

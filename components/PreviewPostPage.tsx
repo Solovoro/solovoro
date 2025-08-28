@@ -1,3 +1,3 @@
-import PostPage from './PostPage';
-
-export default PostPage;
+export default function PreviewPostPage() {
+  return null;
+}

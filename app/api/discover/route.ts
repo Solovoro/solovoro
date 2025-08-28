@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import { promises as fs } from 'fs';
 import path from 'path';
 
+exportt const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 async function loadProviders() {
   const useSample = process.env.USE_SAMPLE_PROVIDERS === '1' && process.env.NODE_ENV !== 'production';
   const fileName = useSample ? 'providers.sample.json' : 'providers.json';

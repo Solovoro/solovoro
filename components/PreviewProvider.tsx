@@ -5,7 +5,3 @@ export default function PreviewProvider({ children }: { children: React.ReactNod
   return <>{children}</>;
 }
 
-// app/[slug]/PreviewPostPage.tsx
-import PostPage from "./PostPage";
-
-export default PostPage;

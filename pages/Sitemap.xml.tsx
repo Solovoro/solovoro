@@ -1,82 +1,49 @@
-import { getAllPosts, getClient } from 'lib/sanity.client'
+// pages/Sitemap.xml.tsx
+import { GetServerSideProps } from 'next'
 
-type SitemapLocation = {
-  url: string
-  changefreq?:
-    | 'always'
-    | 'hourly'
-    | 'daily'
-    | 'weekly'
-    | 'monthly'
-    | 'yearly'
-    | 'never'
-  priority: number
-  lastmod?: Date
+type Post = {
+  slug?: string
+  _updatedAt?: string
 }
 
-// Use this to manually add routes to the sitemap
-const defaultUrls: SitemapLocation[] = [
-  {
-    url: '/',
-    changefreq: 'daily',
-    priority: 1,
-    lastmod: new Date(), // or custom date: '2023-06-12T00:00:00.000Z',
-  },
-  //   { url: '/about', priority: 0.5 },
-  //   { url: '/blog', changefreq: 'weekly', priority: 0.7 },
-]
+function generateSiteMap(posts: Post[]) {
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://solovoro.ca'
 
-const createSitemap = (locations: SitemapLocation[]) => {
-  const baseUrl = process.env.NEXT_PUBLIC_URL // Make sure to configure this
+  const urls = posts
+    .filter((post) => !!post.slug)
+    .map((post) => ({
+      url: `${baseUrl}/posts/${post.slug}`,
+      priority: 0.5,
+      lastmod: post._updatedAt ? new Date(post._updatedAt).toISOString() : undefined,
+    }))
+
   return `<?xml version="1.0" encoding="UTF-8"?>
-  <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-      ${locations
-        .map((location) => {
-          return `<url>
-                    <loc>${baseUrl}${location.url}</loc>
-                    <priority>${location.priority}</priority>
-                    ${
-                      location.lastmod
-                        ? `<lastmod>${location.lastmod.toISOString()}</lastmod>`
-                        : ''
-                    }
-                  </url>`
-        })
-        .join('')}
-  </urlset>
-  `
+   <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+     ${urls
+       .map(
+         (entry) => `<url>
+        <loc>${entry.url}</loc>
+        <priority>${entry.priority}</priority>
+        ${entry.lastmod ? `<lastmod>${entry.lastmod}</lastmod>` : ''}
+      </url>`
+       )
+       .join('')}
+   </urlset>`
 }
 
-export default function SiteMap() {
-  // getServerSideProps will do the heavy lifting
-}
+export const getServerSideProps: GetServerSideProps = async ({ res }) => {
+  // Replace this with actual posts query later
+  const posts: Post[] = []
 
-export async function getServerSideProps({ res }) {
-  const client = getClient()
+  const sitemap = generateSiteMap(posts)
 
-  // Get list of Post urls
-  const [posts = []] = await Promise.all([getAllPosts(client)])
-  const postUrls: SitemapLocation[] = posts
-    .filter(({ slug = '' }) => slug)
-    .map((post) => {
-      return {
-        url: `/posts/${post.slug}`,
-        priority: 0.5,
-        lastmod: new Date(post._updatedAt),
-      }
-    })
-
-  // ... get more routes here
-
-  // Return the default urls, combined with dynamic urls above
-  const locations = [...defaultUrls, ...postUrls]
-
-  // Set response to XML
   res.setHeader('Content-Type', 'text/xml')
-  res.write(createSitemap(locations))
+  res.write(sitemap)
   res.end()
 
-  return {
-    props: {},
-  }
+  return { props: {} }
+}
+
+export default function Sitemap() {
+  return null
 }

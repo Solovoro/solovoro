@@ -2,9 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   // keep default webpack; do NOT override resolve.alias
-  webpack: (config) => {
-    return config;
-  },
+  webpack: (config) => config,
 };
 
-module.exports = nextConfig;
+export default nextConfig;

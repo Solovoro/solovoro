@@ -1,25 +1,8 @@
-import { useLiveQuery } from '@sanity/preview-kit'
+// components/PreviewIndexPage.tsx
+// Preview disabled: pass-through to IndexPage (removes @sanity/preview-kit)
 import IndexPage, { type IndexPageProps } from 'components/IndexPage'
-import {
-  indexQuery,
-  type Post,
-  type Settings,
-  settingsQuery,
-} from 'lib/sanity.queries'
 
 export default function PreviewIndexPage(props: IndexPageProps) {
-  const [posts, loadingPosts] = useLiveQuery<Post[]>(props.posts, indexQuery)
-  const [settings, loadingSettings] = useLiveQuery<Settings>(
-    props.settings,
-    settingsQuery,
-  )
-
-  return (
-    <IndexPage
-      preview
-      loading={loadingPosts || loadingSettings}
-      posts={posts || []}
-      settings={settings || {}}
-    />
-  )
+  return <IndexPage {...props} />
 }
+

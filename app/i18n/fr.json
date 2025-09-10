@@ -1,0 +1,21 @@
+{
+  "nav": { "brand": "Solovoro", "language": "English" },
+  "hero": {
+    "title": "Comparez les déménageurs à Montréal",
+    "subtitle": "Dites-nous vos besoins. Nous vous mettons en relation."
+  },
+  "form": {
+    "name": "Nom",
+    "email": "Courriel",
+    "phone": "Téléphone",
+    "city": "Ville",
+    "service": "Service",
+    "message": "Message",
+    "submit": "Obtenir des soumissions gratuites",
+    "required": "Ce champ est requis",
+    "invalidEmail": "Veuillez entrer une adresse courriel valide",
+    "success": "Merci ! Nous vous contacterons sous peu.",
+    "error": "Une erreur est survenue. Veuillez réessayer."
+  },
+  "footer": { "copy": "\u00a9 Solovoro. Tous droits réservés." }
+}

@@ -1,41 +1,42 @@
-import type { MetadataRoute } from 'next';
-import { services, cities } from '../lib/solovoro';
+// app/sitemap.ts
+import type { MetadataRoute } from "next";
+import { services, cities } from "@/lib/solovoro";
 
-// Use site URL from env or default
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://solovoro.ca';
+// use env or default
+const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://solovoro.ca";
 
-// Generate sitemap statically at build time
-export const dynamic = 'force-static';
+// generate statically
+export const dynamic = "force-static";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const urls: MetadataRoute.SitemapUrl[] = [];
+  const urls: MetadataRoute.Sitemap = [];
 
   // Homepage
   urls.push({
-    url: siteUrl,
+    url: SITE,
     lastModified: new Date(),
-    changeFrequency: 'daily',
+    changeFrequency: "daily",
     priority: 1,
   });
 
-  // Service/city combinations
-  services.forEach((service) => {
-    cities.forEach((city) => {
+  // /{city}/{service}
+  cities.forEach((city) => {
+    services.forEach((service) => {
       urls.push({
-        url: `${siteUrl}/${city.slug}/${service.slug}`,
+        url: `${SITE}/${city.slug}/${service.slug}`,
         lastModified: new Date(),
-        changeFrequency: 'weekly',
+        changeFrequency: "weekly",
         priority: 0.8,
       });
     });
   });
 
-  // Service hubs
+  // /{service}
   services.forEach((service) => {
     urls.push({
-      url: `${siteUrl}/${service.slug}`,
+      url: `${SITE}/${service.slug}`,
       lastModified: new Date(),
-      changeFrequency: 'weekly',
+      changeFrequency: "weekly",
       priority: 0.6,
     });
   });

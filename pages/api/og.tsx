@@ -1,39 +1,30 @@
 // pages/api/og.tsx
 import { ImageResponse } from 'next/og'
 import type { NextRequest } from 'next/server'
-import type { Settings } from 'lib/sanity.queries'
-import { client } from 'lib/sanity.client'
-import { settingsQuery } from 'lib/sanity.queries'
 
-// Keep Edge runtime (OG works here); TS-safe values inside.
+// Keep OG on Edge runtime.
 export const config = { runtime: 'edge' }
 
-export default async function handler(_req: NextRequest) {
-  // TS-safe default; never leave undefined
-  let title: string = 'Solovoro'
-
-  try {
-    const settings = (await client.fetch<Settings>(settingsQuery)) || ({} as Partial<Settings>)
-    // Ensure string | null -> string fallback
-    const maybe = (settings as any)?.ogImage?.title as string | null | undefined
-    title = maybe ?? title
-  } catch {
-    // swallow fetch errors; keep default title
-  }
+export default function handler(req: NextRequest) {
+  // No Sanity deps — read ?title= from URL or fall back.
+  const { searchParams } = new URL(req.url)
+  const title = (searchParams.get('title') ?? 'Solovoro') as string
 
   return new ImageResponse(
     (
       <div
         style={{
-          fontSize: 64,
-          background: 'white',
           width: '100%',
           height: '100%',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
+          background: 'white',
+          color: 'black',
+          fontSize: 64,
           letterSpacing: '-0.02em',
           fontWeight: 700,
+          fontFamily: 'system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica Neue, Arial',
         }}
       >
         {title}
@@ -42,4 +33,5 @@ export default async function handler(_req: NextRequest) {
     { width: 1200, height: 630 }
   )
 }
+
 

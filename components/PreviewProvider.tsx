@@ -1,7 +1,10 @@
-// components/PreviewProvider.tsx
-import React from "react";
+'use client';
 
-export default function PreviewProvider({ children }: { children: React.ReactNode }) {
+import { ReactNode } from 'react';
+
+export default function PreviewProvider({ children }: { children: ReactNode }) {
+  // Preview disabled: pass-through provider
   return <>{children}</>;
 }
+
 

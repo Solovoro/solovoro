@@ -1,8 +1,14 @@
-import Avatar from 'components/AuthorAvatar'
-import CoverImage from 'components/CoverImage'
-import Date from 'components/PostDate'
-import type { Post } from 'lib/sanity.queries'
-import Link from 'next/link'
+// components/PostPreview.tsx
+import CoverImage from './CoverImage'
+
+type Props = {
+  title?: string
+  coverImage?: string
+  date?: string
+  excerpt?: string
+  author?: string
+  slug?: string
+}
 
 export default function PostPreview({
   title,
@@ -11,29 +17,23 @@ export default function PostPreview({
   excerpt,
   author,
   slug,
-}: Omit<Post, '_id'>) {
+}: Props) {
   return (
-    <div>
+    <div className="group">
       <div className="mb-5">
         <CoverImage
-          slug={slug}
-          title={title}
-          image={coverImage}
+          slug={slug ?? ''}
+          title={title ?? ''}
+          image={coverImage ?? ''}
           priority={false}
         />
       </div>
-      <h3 className="mb-3 text-3xl leading-snug text-balance">
-        <Link href={`/posts/${slug}`} className="hover:underline">
-          {title}
-        </Link>
-      </h3>
-      <div className="mb-4 text-lg">
-        <Date dateString={date} />
+      <h3 className="mb-3 text-2xl leading-snug">{title ?? ''}</h3>
+      <div className="mb-4 text-sm text-gray-500">
+        {date ?? ''}{author ? ` • ${author}` : ''}
       </div>
-      {excerpt && (
-        <p className="mb-4 text-lg leading-relaxed text-pretty">{excerpt}</p>
-      )}
-      {author && <Avatar name={author.name} picture={author.picture} />}
+      {excerpt ? <p className="text-lg leading-relaxed">{excerpt}</p> : null}
     </div>
   )
 }
+

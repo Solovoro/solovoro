@@ -4,21 +4,13 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import ClientLeadForm from "@/components/ClientLeadForm";
 
-/**
- * ROUTE PARAM TYPES (fix for TS constraint errors)
- */
-type Params = {
-  city: string;
-  service: string;
-};
+/** Route param types (no PageProps) */
+type Params = { city: string; service: string };
 
-// Rebuild the page every 24h (ISR)
+/** ISR: rebuild every 24h */
 export const revalidate = 86400;
 
-/**
- * Canonical data (kept local to avoid external deps breaking the build)
- * Slugs must be lowercase.
- */
+/** Canonical data (local, lowercase slugs) */
 const CITY_LABELS: Record<string, string> = {
   montreal: "Montreal",
   laval: "Laval",
@@ -39,18 +31,12 @@ const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://solovoro.ca";
 
 /** Helpers */
 const isValidCity = (c: string) => Object.prototype.hasOwnProperty.call(CITY_LABELS, c);
-const isValidService = (s: string) =>
-  Object.prototype.hasOwnProperty.call(SERVICE_LABELS, s);
-
+const isValidService = (s: string) => Object.prototype.hasOwnProperty.call(SERVICE_LABELS, s);
 const cityLabel = (c: string) => CITY_LABELS[c] ?? c;
 const serviceLabel = (s: string) => SERVICE_LABELS[s] ?? s;
+const canonicalFor = (city: string, service: string) => `${SITE}/${city}/${service}`;
 
-const canonicalFor = (city: string, service: string) =>
-  `${SITE}/${city}/${service}`;
-
-/**
- * METADATA (App Router compatible)
- */
+/** Metadata */
 export async function generateMetadata(
   { params }: { params: Params }
 ): Promise<Metadata> {
@@ -58,7 +44,6 @@ export async function generateMetadata(
   const service = params.service?.toLowerCase();
 
   if (!isValidCity(city) || !isValidService(service)) {
-    // Let Next.js render the 404 page for invalid slugs.
     return {
       title: "Not found | Solovoro",
       robots: { index: false, follow: false },
@@ -67,15 +52,12 @@ export async function generateMetadata(
 
   const title = `${serviceLabel(service)} in ${cityLabel(city)} | Solovoro`;
   const description = `Get trusted quotes for ${serviceLabel(service).toLowerCase()} in ${cityLabel(city)}. Compare vetted local providers and get fast estimates from Solovoro.`;
-
   const canonical = canonicalFor(city, service);
 
   return {
     title,
     description,
-    alternates: {
-      canonical,
-    },
+    alternates: { canonical },
     openGraph: {
       title,
       description,
@@ -92,12 +74,8 @@ export async function generateMetadata(
   };
 }
 
-/**
- * PAGE
- */
-export default function Page(
-  { params }: { params: Params }
-) {
+/** Page */
+export default function Page({ params }: { params: Params }) {
   const city = params.city?.toLowerCase();
   const service = params.service?.toLowerCase();
 
@@ -107,7 +85,6 @@ export default function Page(
 
   const capCity = cityLabel(city);
   const capService = serviceLabel(service);
-
   const canonical = canonicalFor(city, service);
 
   // JSON-LD for Service page
@@ -118,20 +95,14 @@ export default function Page(
     areaServed: {
       "@type": "City",
       name: capCity,
-      address: {
-        "@type": "PostalAddress",
-        addressCountry: "CA",
-        addressRegion: "QC",
-      },
+      address: { "@type": "PostalAddress", addressCountry: "CA", addressRegion: "QC" },
     },
     provider: {
       "@type": "Organization",
       name: "Solovoro",
       url: SITE,
       logo: `${SITE}/logo.png`,
-      sameAs: [
-        // add socials when available
-      ],
+      sameAs: [],
     },
     offers: {
       "@type": "Offer",
@@ -155,7 +126,7 @@ export default function Page(
 
   return (
     <main style={{ maxWidth: 960, margin: "72px auto", padding: "0 20px" }}>
-      {/* Canonical (for safety if you also set alternates in metadata) */}
+      {/* Canonical (defensive; also set via alternates in metadata) */}
       <link rel="canonical" href={canonical} />
 
       {/* JSON-LD */}
@@ -206,5 +177,3 @@ export default function Page(
     </main>
   );
 }
-
-

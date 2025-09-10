@@ -1,58 +1,69 @@
+// components/PostPage.tsx
 import Container from 'components/BlogContainer'
 import BlogHeader from 'components/BlogHeader'
 import Layout from 'components/BlogLayout'
-import MoreStories from 'components/MoreStories'
-import PostBody from 'components/PostBody'
 import PostHeader from 'components/PostHeader'
-import PostPageHead from 'components/PostPageHead'
+import PostBody from 'components/PostBody'
 import PostTitle from 'components/PostTitle'
-import SectionSeparator from 'components/SectionSeparator'
+import PostPageHead from 'components/PostPageHead'
 import * as demo from 'lib/demo.data'
-import type { Post, Settings } from 'lib/sanity.queries'
-import Error from 'next/error'
+
+type AnyPost = {
+  title?: string
+  coverImage?: string
+  slug?: string
+  date?: string
+  author?: { name?: string; picture?: string } | string
+  content?: any
+}
+
+type AnySettings = {
+  title?: string
+  description?: string
+}
 
 export interface PostPageProps {
   preview?: boolean
   loading?: boolean
-  post: Post
-  morePosts: Post[]
-  settings: Settings
+  post?: AnyPost
+  settings?: AnySettings
 }
 
-const NO_POSTS: Post[] = []
-
 export default function PostPage(props: PostPageProps) {
-  const { preview, loading, morePosts = NO_POSTS, post, settings } = props
-  const { title = demo.title } = settings || {}
-
-  const slug = post?.slug
-
-  if (!slug && !preview) {
-    return <Error statusCode={404} />
-  }
+  const { preview, loading, post, settings } = props
+  const siteTitle = settings?.title ?? demo.title
+  const siteDesc = settings?.description ?? demo.description
+  const title = post?.title ?? ''
 
   return (
     <>
-      <PostPageHead settings={settings} post={post} />
+      <PostPageHead settings={settings as any} post={post as any} />
 
-      <Layout preview={preview} loading={loading}>
+      <Layout preview={!!preview} loading={!!loading}>
         <Container>
-          <BlogHeader title={title} level={2} />
+          <BlogHeader title={siteTitle} description={siteDesc} level={2} />
+
           {preview && !post ? (
-            <PostTitle>Loading…</PostTitle>
+            <div className="py-12 text-gray-500">Loading…</div>
           ) : (
             <>
-              <article>
+              <PostTitle>{title}</PostTitle>
+
+              <div className="mb-8 sm:mx-0 md:mb-16">
                 <PostHeader
-                  title={post.title}
-                  coverImage={post.coverImage}
-                  date={post.date}
-                  author={post.author}
+                  title={title}
+                  coverImage={typeof post?.coverImage === 'string' ? post?.coverImage : undefined}
+                  slug={typeof post?.slug === 'string' ? post?.slug : undefined}
+                  date={typeof post?.date === 'string' ? post?.date : undefined}
+                  author={
+                    typeof post?.author === 'string'
+                      ? post?.author
+                      : (post?.author as { name?: string })?.name
+                  }
                 />
-                <PostBody content={post.content} />
-              </article>
-              <SectionSeparator />
-              {morePosts?.length > 0 && <MoreStories posts={morePosts} />}
+              </div>
+
+              <PostBody content={(post?.content as any) ?? ''} />
             </>
           )}
         </Container>
@@ -60,3 +71,4 @@ export default function PostPage(props: PostPageProps) {
     </>
   )
 }
+

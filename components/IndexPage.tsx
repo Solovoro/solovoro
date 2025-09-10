@@ -35,7 +35,7 @@ export default function IndexPage(props: IndexPageProps) {
               title={heroPost.title}
               coverImage={heroPost.coverImage}
               date={heroPost.date}
-              author={heroPost.author}
+              author={heroPost.author?.name ?? ''}  // <-- pass string
               slug={heroPost.slug}
               excerpt={heroPost.excerpt}
             />

@@ -1,43 +1,45 @@
-import AuthorAvatar from 'components/AuthorAvatar'
-import CoverImage from 'components/CoverImage'
-import Date from 'components/PostDate'
-import type { Post } from 'lib/sanity.queries'
-import Link from 'next/link'
+// components/HeroPost.tsx
+import CoverImage from "./CoverImage";
 
-export default function HeroPost(
-  props: Pick<
-    Post,
-    'title' | 'coverImage' | 'date' | 'excerpt' | 'author' | 'slug'
-  >,
-) {
-  const { title, coverImage, date, excerpt, author, slug } = props
+type Props = {
+  title?: string;
+  coverImage?: string;
+  date?: string;
+  excerpt?: string;
+  author?: string;
+  slug?: string;
+};
+
+export default function HeroPost({
+  title,
+  coverImage,
+  date,
+  excerpt,
+  author,
+  slug,
+}: Props) {
   return (
     <section>
       <div className="mb-8 md:mb-16">
-        <CoverImage slug={slug} title={title} image={coverImage} priority />
+        <CoverImage
+          slug={slug ?? ""}
+          title={title ?? ""}
+          image={coverImage ?? ""}
+          priority
+        />
       </div>
       <div className="mb-20 md:mb-28 md:grid md:grid-cols-2 md:gap-x-16 lg:gap-x-8">
         <div>
-          <h3 className="mb-4 text-4xl leading-tight lg:text-6xl text-balance">
-            <Link href={`/posts/${slug}`} className="hover:underline">
-              {title || 'Untitled'}
-            </Link>
+          <h3 className="mb-4 text-4xl leading-tight lg:text-5xl">
+            {title ?? ""}
           </h3>
-          <div className="mb-4 text-lg md:mb-0">
-            <Date dateString={date} />
-          </div>
+          <div className="mb-4 text-lg">{date ?? ""}</div>
         </div>
         <div>
-          {excerpt && (
-            <p className="mb-4 text-lg leading-relaxed text-pretty">
-              {excerpt}
-            </p>
-          )}
-          {author && (
-            <AuthorAvatar name={author.name} picture={author.picture} />
-          )}
+          <p className="mb-4 text-lg leading-relaxed">{excerpt ?? ""}</p>
+          <p className="text-sm text-gray-500">By {author ?? "Unknown"}</p>
         </div>
       </div>
     </section>
-  )
+  );
 }

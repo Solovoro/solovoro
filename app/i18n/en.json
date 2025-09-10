@@ -1,0 +1,21 @@
+{
+  "nav": { "brand": "Solovoro", "language": "Français" },
+  "hero": {
+    "title": "Compare moving providers in Montreal",
+    "subtitle": "Tell us what you need. We’ll match you with providers."
+  },
+  "form": {
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "city": "City",
+    "service": "Service",
+    "message": "Message",
+    "submit": "Get free quotes",
+    "required": "This field is required",
+    "invalidEmail": "Please enter a valid email address",
+    "success": "Thanks! We’ll be in touch shortly.",
+    "error": "Something went wrong. Please try again."
+  },
+  "footer": { "copy": "\u00a9 Solovoro. All rights reserved." }
+}

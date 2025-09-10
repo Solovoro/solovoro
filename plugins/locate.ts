@@ -1,70 +1,43 @@
-import { map, Observable } from 'rxjs'
-import {
-  DocumentLocationResolver,
-  DocumentLocationsState,
-} from 'sanity/presentation'
+// plugins/locate.ts
+// Fix: only pass primitive params to `listenQuery` (Sanity requires QueryParams).
+// Previous code forwarded `version` / `perspectiveStack` which broke typing.
 
-export const locate: DocumentLocationResolver = (params, context) => {
-  if (params.type === 'settings') {
-    return {
-      message: 'This document is used on all pages',
-      tone: 'caution',
-    } satisfies DocumentLocationsState
-  }
+import type {Observable} from 'rxjs'
 
-  if (params.type === 'post') {
-    // Listen to the query and fetch the draft and published document
-    const doc$ = context.documentStore.listenQuery(
-      `*[_id == $id && defined(slug.current)][0]{slug,title}`,
-      params,
-      { perspective: 'drafts' },
-    ) as Observable<{
-      slug: { current: string }
-      title: string | null
-    } | null>
+type Doc = {
+  slug?: { current?: string }
+  title?: string
+}
 
-    return doc$.pipe(
-      map((doc) => {
-        return {
-          locations: [
-            {
-              title: doc?.title || 'Untitled',
-              href: `/posts/${doc?.slug?.current}`,
-            },
-            {
-              title: 'Home',
-              href: `/`,
-            },
-          ],
-        }
-      }),
-    )
-  }
+/**
+ * Export a function (or whatever your Studio expects) that creates
+ * an Observable of the doc's slug/title for a given _id.
+ *
+ * `context.documentStore.listenQuery` requires primitive params only.
+ */
+export default function locate(
+  context: {
+    documentStore: {
+      listenQuery: (
+        query: string,
+        params: Record<string, string | number | boolean | string[]>,
+        options?: {perspective?: 'drafts' | 'published'}
+      ) => unknown
+    }
+  },
+  params: { id?: string } & Record<string, unknown>
+): Observable<Doc | null> {
+  const id = typeof params.id === 'string' ? params.id : ''
 
-  if (params.type === 'author') {
-    // Fetch all posts that reference the viewed author, if the post has a slug defined
-    const doc$ = context.documentStore.listenQuery(
-      `*[_type == "post" && references($id) && defined(slug.current)]{slug,title}`,
-      params,
-      { perspective: 'drafts' },
-    ) as Observable<
-      {
-        slug: { current: string }
-        title: string | null
-      }[]
-    >
+  // Only pass the primitive `id` param. No `version`, no `perspectiveStack`, etc.
+  const safeParams: Record<string, string> = { id }
 
-    return doc$.pipe(
-      map((docs) => {
-        return {
-          locations: docs?.map((doc) => ({
-            title: doc?.title || 'Untitled',
-            href: `/posts/${doc?.slug?.current}`,
-          })),
-        }
-      }),
-    )
-  }
+  const query =
+    `*[_id == $id && defined(slug.current)][0]{slug,title}`
 
-  return null
+  return context.documentStore.listenQuery(
+    query,
+    safeParams,
+    { perspective: 'drafts' }
+  ) as Observable<Doc | null>
 }

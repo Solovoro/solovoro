@@ -1,3 +1,4 @@
+// components/IndexPage.tsx
 import Container from 'components/BlogContainer'
 import BlogHeader from 'components/BlogHeader'
 import Layout from 'components/BlogLayout'
@@ -25,7 +26,8 @@ export default function IndexPage(props: IndexPageProps) {
     <>
       <IndexPageHead settings={settings} />
 
-      <Layout preview={preview} loading={loading}>
+      {/* Force booleans to satisfy Layout prop types */}
+      <Layout preview={!!preview} loading={!!loading}>
         <Container>
           <BlogHeader title={title} description={description} level={1} />
           {heroPost && (

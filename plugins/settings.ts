@@ -1,34 +1,25 @@
 // plugins/settings.ts
-// Fix: ensure `title` and `icon` are always safe types for TS strictNullChecks.
+// Sanity v3+ structure: no undefined titles/icons; strictNullChecks-safe.
 
-import S from '@sanity/desk-tool/structure-builder'
+import S from 'sanity/structure'
+
+const settingsItem = S.listItem()
+  .title('Site Settings')
+  .child(
+    S.editor()
+      .id('settings')
+      .schemaType('settings')
+      .documentId('settings')
+  )
 
 export default function settingsStructure() {
   return S.list()
-    .title('Settings')
+    .title('Content')
     .items([
-      // Example: if you have a `settings` schema type
-      S.listItem()
-        .title('Site Settings')
-        .icon(() => '⚙️')
-        .child(
-          S.editor()
-            .id('site-settings')
-            .schemaType('settings')
-            .documentId('settings')
-        ),
+      settingsItem,
+      S.divider(),
+      // Auto-generated lists for common types (adjust if you use different names)
+      S.documentTypeListItem('post'),
+      S.documentTypeListItem('author'),
     ])
-}
-
-// Utility: safe builder for a singleton list item
-export function singletonListItem(typeDef: { name: string; title?: string; icon?: any }) {
-  return S.listItem()
-    .title(typeDef.title ?? typeDef.name) // fallback so never undefined
-    .icon(typeDef.icon ?? (() => '⚙️')) // fallback icon if missing
-    .child(
-      S.editor()
-        .id(typeDef.name)
-        .schemaType(typeDef.name)
-        .documentId(typeDef.name)
-    )
 }

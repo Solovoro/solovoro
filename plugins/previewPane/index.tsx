@@ -1,61 +1,42 @@
-// This plugin is responsible for adding a “Preview” tab to the document pane
-// You can add any React component to `S.view.component` and it will be rendered in the pane
-// and have access to content in the form in real-time.
-// It's part of the Studio's “Structure Builder API” and is documented here:
-// https://www.sanity.io/docs/structure-builder-reference
+// plugins/previewPane/index.tsx
+// Minimal, schema-agnostic preview pane. Removes imports of `schemas/*` to avoid TS/module errors.
 
-import { PREVIEW_MODE_ROUTE } from 'lib/sanity.api'
 import type { DefaultDocumentNodeResolver } from 'sanity/structure'
-import { Iframe, IframeOptions } from 'sanity-plugin-iframe-pane'
-import authorType from 'schemas/author'
-import postType from 'schemas/post'
+import { Iframe } from 'sanity-plugin-iframe-pane'
 
-import AuthorAvatarPreviewPane from './AuthorAvatarPreviewPane'
+type Doc = { slug?: { current?: string } }
 
-const iframeOptions = {
-  url: {
-    origin: 'same-origin',
-    preview: (document) => {
-      if (!document) {
-        return new Error('Missing document')
-      }
-      switch (document._type) {
-        case 'post':
-          return (document as any)?.slug?.current
-            ? `/posts/${(document as any).slug.current}`
-            : new Error('Missing slug')
-        default:
-          return new Error(`Unknown document type: ${document?._type}`)
-      }
-    },
-    draftMode: PREVIEW_MODE_ROUTE,
-  },
-  reload: { button: true },
-} satisfies IframeOptions
-
-export const previewDocumentNode = (): DefaultDocumentNodeResolver => {
-  return (S, { schemaType }) => {
-    switch (schemaType) {
-      case authorType.name:
-        return S.document().views([
-          S.view.form(),
-          S.view
-            .component(({ document }) => (
-              <AuthorAvatarPreviewPane
-                name={document.displayed.name as any}
-                picture={document.displayed.picture as any}
-              />
-            ))
-            .title('Preview'),
-        ])
-
-      case postType.name:
-        return S.document().views([
-          S.view.form(),
-          S.view.component(Iframe).options(iframeOptions).title('Preview'),
-        ])
-      default:
-        return null
-    }
-  }
+const getPreviewUrl = (doc: Doc): string => {
+  const slug = doc?.slug?.current || ''
+  const base =
+    process.env.NEXT_PUBLIC_VERCEL_URL
+      ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
+      : 'http://localhost:3000'
+  const path = slug ? `/posts/${slug}` : '/'
+  return `${base}${path}?preview=1`
 }
+
+const defaultDocumentNode: DefaultDocumentNodeResolver = (S, { schemaType }) => {
+  if (schemaType === 'post') {
+    return S.document().views([
+      S.view.form(),
+      S.view
+        .component(Iframe)
+        .options({
+          url: (doc: Doc) => getPreviewUrl(doc),
+          reload: { button: true },
+        })
+        .title('Preview'),
+    ])
+  }
+
+  if (schemaType === 'author') {
+    // Form only for authors; no external imports needed.
+    return S.document().views([S.view.form()])
+  }
+
+  return S.document().views([S.view.form()])
+}
+
+export { defaultDocumentNode }
+export default defaultDocumentNode

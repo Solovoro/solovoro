@@ -19,7 +19,7 @@ type AnyPost = {
 
 type AnySettings = {
   title?: string
-  description?: string
+  description?: unknown // could be string or PT blocks
 }
 
 export interface PostPageProps {
@@ -31,8 +31,12 @@ export interface PostPageProps {
 
 export default function PostPage(props: PostPageProps) {
   const { preview, loading, post, settings } = props
-  const siteTitle = settings?.title ?? demo.title
-  const siteDesc = settings?.description ?? demo.description
+
+  const siteTitle = (settings?.title as string) ?? demo.title
+  const siteDescUnknown = settings?.description ?? demo.description
+  // BlogHeader expects description as Portable Text blocks (array). If we have a string, pass undefined.
+  const siteDesc = Array.isArray(siteDescUnknown) ? siteDescUnknown : undefined
+
   const title = post?.title ?? ''
 
   return (
@@ -49,19 +53,17 @@ export default function PostPage(props: PostPageProps) {
             <>
               <PostTitle>{title}</PostTitle>
 
-              <div className="mb-8 sm:mx-0 md:mb-16">
-                <PostHeader
-                  title={title}
-                  coverImage={typeof post?.coverImage === 'string' ? post?.coverImage : undefined}
-                  slug={typeof post?.slug === 'string' ? post?.slug : undefined}
-                  date={typeof post?.date === 'string' ? post?.date : undefined}
-                  author={
-                    typeof post?.author === 'string'
-                      ? post?.author
-                      : (post?.author as { name?: string })?.name
-                  }
-                />
-              </div>
+              <PostHeader
+                title={title}
+                coverImage={typeof post?.coverImage === 'string' ? post?.coverImage : undefined}
+                slug={typeof post?.slug === 'string' ? post?.slug : undefined}
+                date={typeof post?.date === 'string' ? post?.date : undefined}
+                author={
+                  typeof post?.author === 'string'
+                    ? post?.author
+                    : (post?.author as { name?: string })?.name
+                }
+              />
 
               <PostBody content={(post?.content as any) ?? ''} />
             </>
@@ -71,4 +73,3 @@ export default function PostPage(props: PostPageProps) {
     </>
   )
 }
-

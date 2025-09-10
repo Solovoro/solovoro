@@ -1,30 +1,41 @@
-import Avatar from 'components/AuthorAvatar'
-import CoverImage from 'components/CoverImage'
-import Date from 'components/PostDate'
-import PostTitle from 'components/PostTitle'
-import type { Post } from 'lib/sanity.queries'
+// components/PostHeader.tsx
+import CoverImage from './CoverImage'
 
-export default function PostHeader(
-  props: Pick<Post, 'title' | 'coverImage' | 'date' | 'author' | 'slug'>,
-) {
-  const { title, coverImage, date, author, slug } = props
+type Props = {
+  title?: string
+  coverImage?: string
+  slug?: string
+  date?: string
+  author?: string
+}
+
+export default function PostHeader({
+  title,
+  coverImage,
+  slug,
+  date,
+  author,
+}: Props) {
   return (
-    <>
-      <PostTitle>{title}</PostTitle>
-      <div className="hidden md:mb-12 md:block">
-        {author && <Avatar name={author.name} picture={author.picture} />}
-      </div>
+    <section>
       <div className="mb-8 sm:mx-0 md:mb-16">
-        <CoverImage title={title} image={coverImage} priority slug={slug} />
+        <CoverImage
+          title={title ?? ''}
+          image={coverImage ?? ''}
+          priority
+          slug={slug ?? ''}
+        />
       </div>
       <div className="mx-auto max-w-2xl">
         <div className="mb-6 block md:hidden">
-          {author && <Avatar name={author.name} picture={author.picture} />}
+          <h1 className="text-4xl font-bold leading-tight">
+            {title ?? ''}
+          </h1>
         </div>
-        <div className="mb-6 text-lg">
-          <Date dateString={date} />
+        <div className="text-sm text-gray-500">
+          {date ?? ''}{author ? ` • ${author}` : ''}
         </div>
       </div>
-    </>
+    </section>
   )
 }

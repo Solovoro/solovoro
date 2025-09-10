@@ -4,7 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import ClientLeadForm from "@/components/ClientLeadForm";
 
-/** Route param types (no PageProps) */
+/** Route param types */
 type Params = { city: string; service: string };
 
 /** ISR: rebuild every 24h */
@@ -38,10 +38,11 @@ const canonicalFor = (city: string, service: string) => `${SITE}/${city}/${servi
 
 /** Metadata */
 export async function generateMetadata(
-  { params }: { params: Params }
+  { params }: { params: Promise<Params> }
 ): Promise<Metadata> {
-  const city = params.city?.toLowerCase();
-  const service = params.service?.toLowerCase();
+  const { city: rawCity, service: rawService } = await params;
+  const city = rawCity?.toLowerCase();
+  const service = rawService?.toLowerCase();
 
   if (!isValidCity(city) || !isValidService(service)) {
     return {
@@ -66,18 +67,14 @@ export async function generateMetadata(
       type: "website",
       locale: "en_CA",
     },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-    },
   };
 }
 
 /** Page */
-export default function Page({ params }: { params: Params }) {
-  const city = params.city?.toLowerCase();
-  const service = params.service?.toLowerCase();
+export default async function Page({ params }: { params: Promise<Params> }) {
+  const { city: rawCity, service: rawService } = await params;
+  const city = rawCity?.toLowerCase();
+  const service = rawService?.toLowerCase();
 
   if (!isValidCity(city) || !isValidService(service)) {
     notFound();
@@ -126,7 +123,7 @@ export default function Page({ params }: { params: Params }) {
 
   return (
     <main style={{ maxWidth: 960, margin: "72px auto", padding: "0 20px" }}>
-      {/* Canonical (defensive; also set via alternates in metadata) */}
+      {/* Canonical */}
       <link rel="canonical" href={canonical} />
 
       {/* JSON-LD */}

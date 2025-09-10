@@ -1,4 +1,4 @@
-/** Minimal Tailwind config (no plugins) */
+/** Tailwind config */
 module.exports = {
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -6,4 +6,7 @@ module.exports = {
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: { extend: {} },
+  plugins: [
+    require("@tailwindcss/typography"), // remove this line if you don't need it
+  ],
 };

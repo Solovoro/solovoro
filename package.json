@@ -17,10 +17,12 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.13",
+    "@tailwindcss/typography": "^0.5.16",
     "@types/node": "^24.3.1",
     "@types/react": "^19.1.12",
     "eslint": "8.57.0",
     "eslint-config-next": "15.5.0",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
     "typescript": "5.5.4"
   },
   "engines": {

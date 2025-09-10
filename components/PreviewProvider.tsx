@@ -1,9 +1,10 @@
-'use client'
-import type { ReactNode } from 'react'
+'use client';
 
-type Props = { children: ReactNode }
+import { ReactNode } from 'react';
 
-export default function PreviewProvider({ children }: Props) {
-  // keep it dead-simple to satisfy the compiler
-  return <div>{children}</div>
+export default function PreviewProvider({ children }: { children: ReactNode }) {
+  // Preview disabled: pass-through provider
+  return <>{children}</>;
 }
+
+
